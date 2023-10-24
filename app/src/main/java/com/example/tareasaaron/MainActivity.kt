@@ -103,11 +103,10 @@ class MainActivity : ComponentActivity() {
 
             LazyColumn {
                 items(taskList) { task ->
-                    TaskItem(task = task, onTaskCheckedChange = { isChecked ->
+                    TaskItem(task = task,
+                        onTaskCheckedChange = { isChecked ->
                         task.completed.value = isChecked
-                    }) {
-                        taskList.remove(task)
-                    }
+                    }, onDeleteClick = {taskList.remove(task)})
                 }
             }
         }
