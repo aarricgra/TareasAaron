@@ -50,8 +50,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.tareasaaron.Data.TaskDatabase
-import com.example.tareasaaron.Data.TaskRepository
 import com.example.tareasaaron.ui.theme.TareasAaronTheme
 import java.util.Calendar
 
@@ -65,10 +63,6 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = Color.LightGray
                 ) {
-                    val taskDatabase = TaskDatabase.getDatabase(this)
-                    val taskDao = taskDatabase.taskDao()
-                    val repository = TaskRepository(taskDao)
-                    val allTasks = repository.allTasks
                     MyApp()
                 }
             }
@@ -97,11 +91,10 @@ class MainActivity : ComponentActivity() {
                 myTextField(textState) { newTextState ->
                     textState = newTextState
                 }
-                Spacer(modifier = Modifier.padding(8.dp))
-                //Desplegable prioridades
                 var expanded by remember { mutableStateOf(false) }
                 Box(
                     modifier = Modifier
+                        .fillMaxHeight()
                         .width(120.dp)
                 )
                 {
@@ -112,12 +105,12 @@ class MainActivity : ComponentActivity() {
                             .fillMaxHeight()
                             .clickable { expanded = true }
                             .padding(horizontal = 16.dp),
-                        textAlign = TextAlign.Center,
                     )
 
                     DropdownMenu(
                         expanded = expanded,
                         onDismissRequest = { expanded = false },
+                        modifier = Modifier.fillMaxSize()
                     ) {
                         priorityList.forEach { priority ->
                             DropdownMenuItem({
@@ -196,8 +189,8 @@ class MainActivity : ComponentActivity() {
                 items(taskList) { task ->
                     TaskItem(task = task,
                         onTaskCheckedChange = { isChecked ->
-                        task.completed.value = isChecked
-                    }, onDeleteClick = {taskList.remove(task)})
+                            task.completed.value = isChecked
+                        }, onDeleteClick = {taskList.remove(task)})
                 }
             }
         }
@@ -241,7 +234,7 @@ class MainActivity : ComponentActivity() {
 
         Row(
             modifier = Modifier
-                .background(backgroundColor, shape = RoundedCornerShape(16.dp))
+                .background(backgroundColor,shape = RoundedCornerShape(16.dp))
                 .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
