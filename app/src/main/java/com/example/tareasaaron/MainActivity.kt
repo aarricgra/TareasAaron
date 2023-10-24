@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.sp
 import com.example.tareasaaron.ui.theme.TareasAaronTheme
 
 class MainActivity : ComponentActivity() {
+    var firstTime = true;
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -66,14 +67,16 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun MyApp() {
-        var taskList by remember { mutableStateOf(mutableStateListOf<Task>()) }
-
-        for (i in 1..20) {
-            taskList.add(Task("Task $i", remember{ mutableStateOf(false) }))
-        }
-
         var textState by remember { mutableStateOf(TextFieldValue("")) }
 
+        var taskList by remember { mutableStateOf(mutableStateListOf<Task>()) }
+
+        if(firstTime) {
+            for (i in 1..20) {
+                taskList.add(Task("Task $i", remember { mutableStateOf(false) }))
+            }
+            firstTime=false
+        }
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
