@@ -30,7 +30,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -64,7 +66,12 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun MyApp() {
-        val taskList = remember { mutableListOf<Task>() }
+        var taskList by remember { mutableStateOf(mutableStateListOf<Task>()) }
+
+        for (i in 1..20) {
+            taskList.add(Task("Task $i", remember{ mutableStateOf(false) }))
+        }
+
         var textState by remember { mutableStateOf(TextFieldValue("")) }
 
         Column(
@@ -81,8 +88,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxHeight(),
                     shape = RectangleShape,
                     onClick = {
-                        if(!textState.text.isEmpty()){
-                            taskList.add(Task(textState.text, false))
+                        if (!textState.text.isEmpty()) {
+                            taskList.add(Task(textState.text, mutableStateOf(false) ))
                             textState = TextFieldValue("")
                         }
                     }
@@ -94,7 +101,7 @@ class MainActivity : ComponentActivity() {
             LazyColumn {
                 items(taskList) { task ->
                     TaskItem(task = task, onTaskCheckedChange = { isChecked ->
-                        task.completed = isChecked
+                        task.completed.value = isChecked
                     }) {
                         taskList.remove(task)
                     }
@@ -124,7 +131,7 @@ class MainActivity : ComponentActivity() {
         )
     }
 
-    data class Task(val name: String, var completed: Boolean)
+    data class Task(val name: String, val completed: MutableState<Boolean>)
 
     @Composable
     fun TaskItem(task: Task, onTaskCheckedChange: (Boolean) -> Unit, onDeleteClick: () -> Unit) {
@@ -136,7 +143,7 @@ class MainActivity : ComponentActivity() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Checkbox(
-                checked = task.completed,
+                checked = task.completed.value,
                 onCheckedChange = { isChecked ->
                     onTaskCheckedChange(isChecked)
                 }
