@@ -110,7 +110,6 @@ class MainActivity : ComponentActivity() {
                     DropdownMenu(
                         expanded = expanded,
                         onDismissRequest = { expanded = false },
-                        modifier = Modifier.fillMaxSize()
                     ) {
                         priorityList.forEach { priority ->
                             DropdownMenuItem({
