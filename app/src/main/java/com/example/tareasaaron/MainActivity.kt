@@ -40,6 +40,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -76,6 +77,11 @@ class MainActivity : ComponentActivity() {
         var taskList by remember { mutableStateOf(mutableStateListOf<Task>()) }
         val priorityList = listOf("Urgente","Alta", "Media", "Baja")
         var selectedPriority by remember { mutableStateOf(priorityList[3]) }
+
+
+        taskList.clear()
+        taskList.addAll(CsvManagement.loadFromCSV(this))
+
 
         Column(
             modifier = Modifier.fillMaxSize()
@@ -177,6 +183,7 @@ class MainActivity : ComponentActivity() {
                         if (!textState.text.isEmpty()&&!selectedDateText.isEmpty()) {
                             taskList.add(Task(textState.text, mutableStateOf(false),selectedDateText,selectedPriority))
                             textState = TextFieldValue("")
+                            CsvManagement.saveOnCsv(taskList,this@MainActivity)
                         }
                     }
                 ) {
@@ -189,7 +196,12 @@ class MainActivity : ComponentActivity() {
                     TaskItem(task = task,
                         onTaskCheckedChange = { isChecked ->
                             task.completed.value = isChecked
-                        }, onDeleteClick = {taskList.remove(task)})
+                            CsvManagement.saveOnCsv(taskList,this@MainActivity)
+                        },
+                        onDeleteClick = {
+                            taskList.remove(task)
+                            CsvManagement.saveOnCsv(taskList,this@MainActivity)
+                        })
                 }
             }
         }
